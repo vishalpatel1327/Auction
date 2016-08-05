@@ -4,9 +4,10 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragment.AuctionLiveFragmant">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_auction"
         android:layout_width="match_parent"
+        android:padding="5dp"
         android:layout_height="match_parent"
         android:text="@string/hello_blank_fragment" />
 

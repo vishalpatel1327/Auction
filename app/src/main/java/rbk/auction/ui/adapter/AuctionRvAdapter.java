@@ -16,16 +16,16 @@ import rbk.auction.R;
  * Created by DELL-PC on 06-08-2016.
  */
 
-public class ItemRvAdapter extends RecyclerView.Adapter<ItemRvAdapter.ViewHolder> {
+public class AuctionRvAdapter extends RecyclerView.Adapter<AuctionRvAdapter.ViewHolder> {
     private LayoutInflater mInflater;
 
-    public ItemRvAdapter(Activity context, List<String> a) {
+    public AuctionRvAdapter(Activity context, List<String> a) {
         this.mInflater = LayoutInflater.from(context);
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = mInflater.inflate(R.layout.items_rv_item, parent, false);
+        View v = mInflater.inflate(R.layout.auction_rv_item, parent, false);
         ViewHolder holder = new ViewHolder(v);
         return holder;
     }

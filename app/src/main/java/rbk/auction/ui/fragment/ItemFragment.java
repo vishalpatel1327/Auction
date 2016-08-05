@@ -67,7 +67,6 @@ public class ItemFragment extends Fragment {
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
 
-        adapter.addFragment(new ItemAllFragment(), "All Items");
         adapter.addFragment(new ItemAllFragment(), "On Auction");
         adapter.addFragment(new ItemAllFragment(), "Pending");
         adapter.addFragment(new ItemAllFragment(), "Sold");

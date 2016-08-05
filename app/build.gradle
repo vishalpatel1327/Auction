@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "rbk.auction"
+        applicationId "rbk.auction_rv_item"
         minSdkVersion 16
         targetSdkVersion 23
         versionCode 1

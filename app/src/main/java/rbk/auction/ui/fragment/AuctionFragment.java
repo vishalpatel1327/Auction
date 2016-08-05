@@ -62,7 +62,7 @@ public class AuctionFragment extends Fragment {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
 
         adapter.addFragment(new AuctionLiveFragmant(), "Live Auction");
-        adapter.addFragment(new AuctionFinishedFragment(), "Finished Auction");
+        adapter.addFragment(new AuctionLiveFragmant(), "Finished Auction");
         viewPager.setAdapter(adapter);
     }
 

@@ -42,7 +42,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String A_END_TIME = "end_time";
     public static final String A_STATUS = "status";
     //Database
-    static final String DATABASE = "auction.db";
+    static final String DATABASE = "auction_rv_item.db";
     static final int VERSION = 1;
 
     public DBHelper(Context context) {

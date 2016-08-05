@@ -29,7 +29,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="30dp"
+
                     android:fontFamily="sans-serif"
                     android:paddingBottom="10dp"
                     android:paddingTop="10dp"
@@ -41,6 +41,7 @@
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_marginBottom="15dp"
+                    android:layout_marginTop="15dp"
                     app:maskImage="@drawable/masking"
                     app:porterduffxfermode="DST_IN">
 
@@ -60,7 +61,7 @@
                     android:layout_height="wrap_content">
 
                     <EditText
-                        android:id="@+id/dialog_add_item_name"
+                        android:id="@+id/et_dialog_add_item_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/item_name"
@@ -75,7 +76,7 @@
                     android:layout_height="wrap_content">
 
                     <EditText
-                        android:id="@+id/dialog_add_item_description"
+                        android:id="@+id/et_dialog_add_item_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/item_description"
@@ -90,11 +91,11 @@
                     android:layout_height="wrap_content">
 
                     <EditText
-                        android:id="@+id/dialog_add_item_initial_price"
+                        android:id="@+id/et_dialog_add_item_initial_price"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/item_initial_price"
-                        android:inputType="text"
+                        android:inputType="numberDecimal"
                         android:maxLines="1"
                         android:singleLine="true" />
 
@@ -105,7 +106,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="25dp"
                     android:background="@drawable/button_selecter"
                     android:paddingLeft="25dp"
                     android:paddingRight="25dp"

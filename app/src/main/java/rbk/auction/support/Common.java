@@ -1,12 +1,16 @@
 package rbk.auction.support;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 
 import java.io.File;
@@ -20,6 +24,8 @@ public class Common {
     public static final String BOT_USER = "bot_user";
     public static final int SELECT_FILE = 11;
     public static final int REQUEST_CAMERA = 22;
+    public static final int MY_PERMISSIONS_REQUEST_GALLERY = 23;
+    public static final int MY_PERMISSIONS_REQUEST_CAMERA = 24;
 
     public static void saveStrPref(Context context, String key, String value) {
         SharedPreferences.Editor editor = context.getSharedPreferences("AuctionPref", Context.MODE_PRIVATE).edit();
@@ -57,22 +63,36 @@ public class Common {
 
                 switch (item) {
                     case 0:
-                        intent = new Intent(
-                                Intent.ACTION_PICK,
-                                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        intent.setType("image/*");
-                        activity.startActivityForResult(
-                                Intent.createChooser(intent, "Select File"),
-                                SELECT_FILE);
+
+                        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                                ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                            intent = new Intent(
+                                    Intent.ACTION_PICK,
+                                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            intent.setType("image/*");
+                            activity.startActivityForResult(
+                                    Intent.createChooser(intent, "Select File"),
+                                    SELECT_FILE);
+                        } else {
+                            ActivityCompat.requestPermissions(activity,
+                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                    Common.MY_PERMISSIONS_REQUEST_GALLERY);
+                        }
+
+
                         break;
                     case 1:
 
-                        intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        File file = new File(activity.getExternalCacheDir(),
-                                String.valueOf(System.currentTimeMillis()) + ".jpg");
-                        Uri fileUri = Uri.fromFile(file);
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-                        activity.startActivityForResult(intent, REQUEST_CAMERA);
+                        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                                && ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                            Intent i1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                            activity.startActivityForResult(i1, REQUEST_CAMERA);
+                        } else {
+                            ActivityCompat.requestPermissions(activity,
+                                    new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                    Common.MY_PERMISSIONS_REQUEST_CAMERA);
+                        }
+
                         break;
                     case 2:
 

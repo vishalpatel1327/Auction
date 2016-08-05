@@ -1,6 +1,13 @@
 package rbk.auction.ui.activity;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -11,10 +18,18 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+
 import rbk.auction.R;
+import rbk.auction.support.Common;
+import rbk.auction.ui.dialog.AddItemDialog;
 import rbk.auction.ui.fragment.AuctionFragment;
 import rbk.auction.ui.fragment.BidFragment;
 import rbk.auction.ui.fragment.ItemFragment;
@@ -25,6 +40,8 @@ public class HomeActivity extends AppCompatActivity
     AuctionFragment auctionFragment = AuctionFragment.newInstance();
     ItemFragment itemFragment = ItemFragment.newInstance();
     BidFragment bidFragment = BidFragment.newInstance();
+    private AddItemDialog addItemDialog;
+    private Activity activity;
 
 
     @Override
@@ -34,12 +51,16 @@ public class HomeActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        activity = this;
+
+        addItemDialog = new AddItemDialog(this);
+        addItemDialog.setOwnerActivity(this);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                addItemDialog.show();
             }
         });
 
@@ -91,4 +112,67 @@ public class HomeActivity extends AppCompatActivity
         transaction.commit();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.e(HomeActivity.class.getSimpleName(), "onActivityResult" + requestCode);
+
+        if (requestCode == Common.REQUEST_CAMERA) {
+            if (resultCode == RESULT_OK) {
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+
+
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                photo.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                String path = MediaStore.Images.Media.insertImage(activity.getContentResolver(), photo, "Title", null);
+                Uri fileUri = Uri.parse(path);
+                addItemDialog.setItemImage(fileUri);
+                Log.e(HomeActivity.class.getSimpleName(), fileUri.toString());
+
+
+            }
+        } else if (requestCode == Common.SELECT_FILE) {
+
+            if (resultCode == RESULT_OK) {
+                Uri fileUri = data.getData();
+
+
+                addItemDialog.setItemImage(fileUri);
+            }
+        }
+
+    }
+
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (Common.MY_PERMISSIONS_REQUEST_GALLERY == requestCode) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                Intent intent = new Intent(
+                        Intent.ACTION_PICK,
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                intent.setType("image/*");
+                activity.startActivityForResult(
+                        Intent.createChooser(intent, "Select File"),
+                        Common.SELECT_FILE);
+            } else {
+
+
+            }
+        } else if (Common.MY_PERMISSIONS_REQUEST_CAMERA == requestCode) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                File file = new File(activity.getExternalCacheDir(),
+                        String.valueOf(System.currentTimeMillis()) + ".jpg");
+                Uri fileUri = Uri.fromFile(file);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+                activity.startActivityForResult(intent, Common.REQUEST_CAMERA);
+
+            } else {
+
+
+            }
+        }
+    }
 }

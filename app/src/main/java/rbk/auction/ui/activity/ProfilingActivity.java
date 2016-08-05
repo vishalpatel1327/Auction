@@ -125,15 +125,11 @@ public class ProfilingActivity extends AppCompatActivity {
         // Reset errors.
         mName.setError(null);
 
-        // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mName.getText().toString();
-
         boolean cancel = false;
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(mName.getText().toString())) {
             mName.setError(getString(R.string.error_field_required));
             focusView = mName;
             cancel = true;
@@ -154,6 +150,7 @@ public class ProfilingActivity extends AppCompatActivity {
             values.put(DBHelper.U_IMAGE, profileImage);
             values.put(DBHelper.U_PASSWORD, password);
             database.insert(DBHelper.TUSER, null, values);
+            database.close();
 
             UserModel userData = new UserModel();
             userData.setId(0);
@@ -164,7 +161,6 @@ public class ProfilingActivity extends AppCompatActivity {
             userData.setRememberMe(rememberMe);
             String userDataStr = new Gson().toJson(userData);
             Common.saveStrPref(this, Common.PREF_USER, userDataStr);
-            database.close();
 
             startActivity(new Intent(this, HomeActivity.class));
         }

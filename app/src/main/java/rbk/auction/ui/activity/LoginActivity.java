@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -190,11 +191,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 userData.setEmail(c.getString(c.getColumnIndex(DBHelper.U_EMAIL)));
                 userData.setPassword(c.getString(c.getColumnIndex(DBHelper.U_PASSWORD)));
                 userData.setRememberMe(mRememberMe.isChecked());
-                String userDataStr = new Gson().toJson(userData);
-                Common.saveStrPref(this, Common.PREF_USER, userDataStr);
-                startActivity(new Intent(this, HomeActivity.class));
-                finish();
+
+                if (userData.getPassword().equals(password)) {
+                    String userDataStr = new Gson().toJson(userData);
+                    Common.saveStrPref(this, Common.PREF_USER, userDataStr);
+                    startActivity(new Intent(this, HomeActivity.class));
+                    finish();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Wrong Password!", Toast.LENGTH_LONG).show();
+                }
             } else {
+
+
                 Intent iProfiling = new Intent(this, ProfilingActivity.class);
                 iProfiling.putExtra(DBHelper.U_EMAIL, email);
                 iProfiling.putExtra(DBHelper.U_PASSWORD, password);

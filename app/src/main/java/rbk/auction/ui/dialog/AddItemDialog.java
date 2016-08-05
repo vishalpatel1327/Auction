@@ -8,9 +8,6 @@ import android.view.WindowManager;
 
 import rbk.auction.R;
 
-/**
- * Created by Dharmesh on 8/6/2016.
- */
 public class AddItemDialog extends Dialog {
     public AddItemDialog(Context context) {
         super(context, R.style.MyDialog);

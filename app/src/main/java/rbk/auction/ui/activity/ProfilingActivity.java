@@ -2,8 +2,8 @@ package rbk.auction.ui.activity;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -13,9 +13,13 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
+
+import java.io.File;
 
 import rbk.auction.R;
 import rbk.auction.database.DBHelper;
@@ -26,33 +30,90 @@ public class ProfilingActivity extends AppCompatActivity {
 
     private EditText mEmailView;
     private EditText mName;
+    ImageView ivProfile, ivAddProfilePic;
+
+    String email, password, profileImage = "";
+    boolean rememberMe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profiling);
-        // Set up the login form.
-        mEmailView = (EditText) findViewById(R.id.email);
 
+        Intent intent = getIntent();
+        email = intent.getStringExtra(DBHelper.U_EMAIL);
+        password = intent.getStringExtra(DBHelper.U_PASSWORD);
+        rememberMe = intent.getBooleanExtra("remember_me", false);
+
+        mEmailView = (EditText) findViewById(R.id.email);
+        mEmailView.setText(email);
         mName = (EditText) findViewById(R.id.name);
         mName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                if (id == R.id.profiling || id == EditorInfo.IME_NULL) {
+                    attemptSignUp();
                     return true;
                 }
                 return false;
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
+        ivProfile = (ImageView) findViewById(R.id.profile);
+        ivAddProfilePic = (ImageView) findViewById(R.id.add_profile_pic);
+        ivAddProfilePic.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                attemptLogin();
+            public void onClick(View v) {
+                Common.OpenDialogForImage(ProfilingActivity.this);
             }
         });
+
+        Button mSignUpButton = (Button) findViewById(R.id.sign_up_button);
+        mSignUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attemptSignUp();
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Common.REQUEST_CAMERA) {
+            if (resultCode == RESULT_OK) {
+                File file = new File(getExternalCacheDir(),
+                        String.valueOf(System.currentTimeMillis()) + ".jpg");
+                Uri fileUri = Uri.fromFile(file);
+
+                profileImage = fileUri.toString();
+
+                Glide
+                        .with(ProfilingActivity.this)
+                        .load(fileUri)
+                        .centerCrop()
+                        .placeholder(R.drawable.user)
+                        .crossFade()
+                        .into(ivProfile);
+            }
+        } else if (requestCode == Common.SELECT_FILE) {
+
+            if (resultCode == RESULT_OK) {
+                Uri fileUri = data.getData();
+
+                profileImage = fileUri.toString();
+
+                Glide
+                        .with(ProfilingActivity.this)
+                        .load(fileUri)
+                        .centerCrop()
+                        .placeholder(R.drawable.user)
+                        .crossFade()
+                        .into(ivProfile);
+            }
+        }
+
     }
 
     /**
@@ -60,9 +121,8 @@ public class ProfilingActivity extends AppCompatActivity {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private void attemptLogin() {
+    private void attemptSignUp() {
         // Reset errors.
-        mEmailView.setError(null);
         mName.setError(null);
 
         // Store values at the time of the login attempt.
@@ -73,20 +133,9 @@ public class ProfilingActivity extends AppCompatActivity {
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mName.setError(getString(R.string.error_invalid_password));
-            focusView = mName;
-            cancel = true;
-        }
-
-        // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+            mName.setError(getString(R.string.error_field_required));
+            focusView = mName;
             cancel = true;
         }
 
@@ -97,40 +146,25 @@ public class ProfilingActivity extends AppCompatActivity {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            SQLiteDatabase database = DBHelper.getInstance(this).getReadableDatabase();
-            Cursor c = database.query(DBHelper.TUSER, null, DBHelper.U_EMAIL + " = ?", new String[]{email}, null, null, null);
+            SQLiteDatabase database = DBHelper.getInstance(this).getWritableDatabase();
 
-            if (c != null && c.getCount() == 1) {
-                UserModel userData = new UserModel();
-                c.moveToFirst();
-                userData.setId(c.getInt(c.getColumnIndex(DBHelper.U_ID)));
-                userData.setEmail(c.getString(c.getColumnIndex(DBHelper.U_EMAIL)));
-                userData.setPassword(c.getString(c.getColumnIndex(DBHelper.U_PASSWORD)));
-                String userDataStr = new Gson().toJson(userData);
-                Common.saveStrPref(this, Common.PREF_USER, userDataStr);
-                database.close();
-            } else {
-                database.close();
-                database = DBHelper.getInstance(this).getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(DBHelper.U_NAME, mName.getText().toString());
+            values.put(DBHelper.U_EMAIL, email);
+            values.put(DBHelper.U_IMAGE, profileImage);
+            values.put(DBHelper.U_PASSWORD, password);
+            database.insert(DBHelper.TUSER, null, values);
 
-
-                ContentValues values = new ContentValues();
-                values.put(DBHelper.U_EMAIL, email);
-                values.put(DBHelper.U_PASSWORD, password);
-                database.insert(DBHelper.TUSER, null, values);
-
-
-                UserModel userData = new UserModel();
-                userData.setId(-1);
-                userData.setEmail(email);
-                userData.setPassword(password);
-                String userDataStr = new Gson().toJson(userData);
-                Common.saveStrPref(this, Common.PREF_USER, userDataStr);
-                database.close();
-            }
-
-            if (c != null)
-                c.close();
+            UserModel userData = new UserModel();
+            userData.setId(0);
+            userData.setName(mName.getText().toString());
+            userData.setImage(profileImage);
+            userData.setEmail(email);
+            userData.setPassword(password);
+            userData.setRememberMe(rememberMe);
+            String userDataStr = new Gson().toJson(userData);
+            Common.saveStrPref(this, Common.PREF_USER, userDataStr);
+            database.close();
 
             startActivity(new Intent(this, HomeActivity.class));
         }

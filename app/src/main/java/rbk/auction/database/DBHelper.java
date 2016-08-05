@@ -18,6 +18,8 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String TAUCTION = "auctions";
     //User Table
     public static final String U_ID = "_id";
+    public static final String U_NAME = "name";
+    public static final String U_IMAGE = "image";
     public static final String U_EMAIL = "email";
     public static final String U_PASSWORD = "password";
     //Items Table
@@ -65,6 +67,8 @@ public class DBHelper extends SQLiteOpenHelper {
         //USER
         db.execSQL("CREATE TABLE " + TUSER + " ( "
                 + U_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + U_NAME + " text, "
+                + U_IMAGE + " text, "
                 + U_EMAIL + " text, "
                 + U_PASSWORD + " text )");
 

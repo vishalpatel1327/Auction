@@ -29,13 +29,14 @@
                 <rbk.auction.ui.widget.MaskableFrameLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
-                    app:maskImage="@drawable/masking">
+                    app:maskImage="@drawable/masking"
+                    app:porterduffxfermode="DST_IN">
 
                     <ImageView
                         android:id="@+id/profile"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:scaleType="centerCrop"
                         android:src="@drawable/user" />
                 </rbk.auction.ui.widget.MaskableFrameLayout>
 
@@ -85,7 +86,7 @@
             </android.support.design.widget.TextInputLayout>
 
             <Button
-                android:id="@+id/email_sign_in_button"
+                android:id="@+id/sign_up_button"
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

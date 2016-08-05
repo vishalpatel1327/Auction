@@ -7,7 +7,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.google.gson.Gson;
+
 import rbk.auction.R;
+import rbk.auction.database.UserModel;
+import rbk.auction.support.Common;
 
 public class Splash extends AppCompatActivity {
 
@@ -27,7 +31,18 @@ public class Splash extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(Splash.this, LoginActivity.class));
+                String user = Common.readStrPref(Splash.this, Common.PREF_USER);
+                if (user != null) {
+                    UserModel userModel = new Gson().fromJson(user, UserModel.class);
+                    if (userModel.isRememberMe()) {
+                        startActivity(new Intent(Splash.this, HomeActivity.class));
+                    } else {
+                        startActivity(new Intent(Splash.this, LoginActivity.class));
+                    }
+
+                } else {
+                    startActivity(new Intent(Splash.this, LoginActivity.class));
+                }
                 finish();
             }
         }, splashDelay);

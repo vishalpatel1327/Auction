@@ -2,7 +2,6 @@ package rbk.auction.ui.activity;
 
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
-import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -25,6 +24,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -53,6 +53,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private CheckBox mRememberMe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +74,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 return false;
             }
         });
+
+        mRememberMe = (CheckBox) findViewById(R.id.checkRememberMe);
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -145,7 +148,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        // Check for a valid email address.
+        if (TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.error_field_required));
+            focusView = mPasswordView;
+            cancel = true;
+        } else if (!isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -173,38 +181,31 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             Cursor c = database.query(DBHelper.TUSER, null, DBHelper.U_EMAIL + " = ?", new String[]{email}, null, null, null);
 
             if (c != null && c.getCount() == 1) {
-                UserModel userData = new UserModel();
+                database.close();
                 c.moveToFirst();
+                UserModel userData = new UserModel();
                 userData.setId(c.getInt(c.getColumnIndex(DBHelper.U_ID)));
+                userData.setName(c.getString(c.getColumnIndex(DBHelper.U_NAME)));
+                userData.setImage(c.getString(c.getColumnIndex(DBHelper.U_IMAGE)));
                 userData.setEmail(c.getString(c.getColumnIndex(DBHelper.U_EMAIL)));
                 userData.setPassword(c.getString(c.getColumnIndex(DBHelper.U_PASSWORD)));
+                userData.setRememberMe(mRememberMe.isChecked());
                 String userDataStr = new Gson().toJson(userData);
                 Common.saveStrPref(this, Common.PREF_USER, userDataStr);
-                database.close();
+                startActivity(new Intent(this, HomeActivity.class));
+                finish();
             } else {
-                database.close();
-                database = DBHelper.getInstance(this).getWritableDatabase();
-
-
-                ContentValues values = new ContentValues();
-                values.put(DBHelper.U_EMAIL, email);
-                values.put(DBHelper.U_PASSWORD, password);
-                database.insert(DBHelper.TUSER, null, values);
-
-
-                UserModel userData = new UserModel();
-                userData.setId(-1);
-                userData.setEmail(email);
-                userData.setPassword(password);
-                String userDataStr = new Gson().toJson(userData);
-                Common.saveStrPref(this, Common.PREF_USER, userDataStr);
-                database.close();
+                Intent iProfiling = new Intent(this, ProfilingActivity.class);
+                iProfiling.putExtra(DBHelper.U_EMAIL, email);
+                iProfiling.putExtra(DBHelper.U_PASSWORD, password);
+                iProfiling.putExtra("remember_me", mRememberMe.isChecked());
+                startActivity(iProfiling);
             }
 
-            if (c != null)
+            if (c != null) {
                 c.close();
+            }
 
-            startActivity(new Intent(this, HomeActivity.class));
         }
     }
 

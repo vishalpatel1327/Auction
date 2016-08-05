@@ -47,10 +47,10 @@ public class AuctionFragment extends Fragment {
 
         contentView = inflater.inflate(R.layout.fragment_auction, container, false);
 
-        viewPager = (ViewPager) contentView.findViewById(R.id.viewpager);
+        viewPager = (ViewPager) contentView.findViewById(R.id.viewpager_fragment_auction);
         setupViewPager(viewPager);
 
-        tabLayout = (TabLayout) contentView.findViewById(R.id.tabs);
+        tabLayout = (TabLayout) contentView.findViewById(R.id.tabs_fragment_auction);
         tabLayout.setupWithViewPager(viewPager);
 
 
@@ -61,13 +61,10 @@ public class AuctionFragment extends Fragment {
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
 
-        adapter.addFragment(new LiveAuctionFragmant(), "Live Auction");
-        adapter.addFragment(new FinishedAuctionFragment(), "Finished Auction");
+        adapter.addFragment(new AuctionLiveFragmant(), "Live Auction");
+        adapter.addFragment(new AuctionFinishedFragment(), "Finished Auction");
         viewPager.setAdapter(adapter);
     }
-
-
-
 
 
 }

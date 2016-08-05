@@ -12,19 +12,19 @@ import rbk.auction.R;
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * to handle interaction events.
- * Use the {@link LiveAuctionFragmant#newInstance} factory method to
+ * Use the {@link AuctionLiveFragmant#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LiveAuctionFragmant extends Fragment {
+public class AuctionLiveFragmant extends Fragment {
 
 
-    public LiveAuctionFragmant() {
+    public AuctionLiveFragmant() {
         // Required empty public constructor
     }
 
     // TODO: Rename and change types and number of parameters
-    public static LiveAuctionFragmant newInstance() {
-        LiveAuctionFragmant fragment = new LiveAuctionFragmant();
+    public static AuctionLiveFragmant newInstance() {
+        AuctionLiveFragmant fragment = new AuctionLiveFragmant();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;

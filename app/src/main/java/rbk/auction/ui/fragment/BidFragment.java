@@ -1,12 +1,15 @@
 package rbk.auction.ui.fragment;
 
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import rbk.auction.R;
+import rbk.auction.ui.adapter.ViewPagerAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,6 +20,10 @@ import rbk.auction.R;
  */
 public class BidFragment extends Fragment {
 
+
+    private ViewPager viewPager;
+    private View contentView;
+    private TabLayout tabLayout;
 
     public BidFragment() {
         // Required empty public constructor
@@ -45,7 +52,28 @@ public class BidFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_bid, container, false);
+        contentView = inflater.inflate(R.layout.fragment_bid, container, false);
+
+
+        viewPager = (ViewPager) contentView.findViewById(R.id.viewpager_fragment_bid);
+        setupViewPager(viewPager);
+
+        tabLayout = (TabLayout) contentView.findViewById(R.id.tabs_fragment_bid);
+        tabLayout.setupWithViewPager(viewPager);
+
+        return contentView;
     }
+
+
+    private void setupViewPager(ViewPager viewPager) {
+
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
+
+        adapter.addFragment(new BidAllFragment(), "All Bid");
+        adapter.addFragment(new BidLiveFragment(), "Live Bid");
+        adapter.addFragment(new BidFinishedFragment(), "Finished Bid");
+        viewPager.setAdapter(adapter);
+    }
+
 
 }

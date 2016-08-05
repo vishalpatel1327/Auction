@@ -1,26 +1,29 @@
 package rbk.auction.ui.fragment;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import rbk.auction.R;
+import rbk.auction.ui.adapter.ViewPagerAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ItemFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link ItemFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class ItemFragment extends Fragment {
 
-    private OnFragmentInteractionListener mListener;
+
+    private View contentView;
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
 
     public ItemFragment() {
         // Required empty public constructor
@@ -48,45 +51,29 @@ public class ItemFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_item, container, false);
+        contentView = inflater.inflate(R.layout.fragment_item, container, false);
+
+        viewPager = (ViewPager) contentView.findViewById(R.id.viewpager_fragment_item);
+        setupViewPager(viewPager);
+
+        tabLayout = (TabLayout) contentView.findViewById(R.id.tabs_fragment_item);
+        tabLayout.setupWithViewPager(viewPager);
+
+        return contentView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+
+    private void setupViewPager(ViewPager viewPager) {
+
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
+
+        adapter.addFragment(new ItemAllFragment(), "All Items");
+        adapter.addFragment(new ItemOnAuctionFragment(), "On Auction");
+        adapter.addFragment(new ItemPendingFragment(), "Pending");
+        adapter.addFragment(new ItemSoldFragment(), "Sold");
+
+        viewPager.setAdapter(adapter);
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
 }

@@ -1,7 +1,9 @@
 package rbk.auction.ui.fragment;
 
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +14,17 @@ import rbk.auction.R;
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * to handle interaction events.
- * Use the {@link FinishedAuctionFragment#newInstance} factory method to
+ * Use the {@link AuctionFinishedFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FinishedAuctionFragment extends Fragment {
+public class AuctionFinishedFragment extends Fragment {
+    private View contentView;
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
     // TODO: Rename parameter arguments, choose names that match
 
 
-    public FinishedAuctionFragment() {
+    public AuctionFinishedFragment() {
         // Required empty public constructor
     }
 
@@ -29,11 +34,11 @@ public class FinishedAuctionFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment FinishedAuctionFragment.
+     * @return A new instance of fragment AuctionFinishedFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static FinishedAuctionFragment newInstance(String param1, String param2) {
-        FinishedAuctionFragment fragment = new FinishedAuctionFragment();
+    public static AuctionFinishedFragment newInstance(String param1, String param2) {
+        AuctionFinishedFragment fragment = new AuctionFinishedFragment();
 
         return fragment;
     }
@@ -47,8 +52,17 @@ public class FinishedAuctionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_finished_auction, container, false);
+
+        contentView = inflater.inflate(R.layout.fragment_finished_auction, container, false);
+
+
+
+
+
+        return contentView;
     }
+
+
 
 
 }

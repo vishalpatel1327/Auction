@@ -45,6 +45,4 @@ public class ItemPendingFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_item_pending, container, false);
     }
-
-
 }

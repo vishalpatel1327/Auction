@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -37,9 +38,10 @@ public class HomeActivity extends AppCompatActivity
     AuctionFragment auctionFragment = AuctionFragment.newInstance();
     ItemFragment itemFragment = ItemFragment.newInstance();
     BidFragment bidFragment = BidFragment.newInstance();
+    Fragment currentFragment;
     private AddItemDialog addItemDialog;
     private Activity activity;
-
+    private Fragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,10 @@ public class HomeActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         activity = this;
+
+        auctionFragment.setRetainInstance(true);
+        itemFragment.setRetainInstance(true);
+        bidFragment.setRetainInstance(true);
 
         addItemDialog = new AddItemDialog(this);
         addItemDialog.setOwnerActivity(this);
@@ -69,6 +75,8 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.getMenu().getItem(0).setChecked(true);
+        replcaeFragment(auctionFragment);
     }
 
     @Override
@@ -81,7 +89,6 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -89,12 +96,31 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_auctions) {
-            // Handle the camera action
-            replaceFragment(auctionFragment);
+            fragment = getSupportFragmentManager().findFragmentByTag(AuctionFragment.class.getSimpleName());
+            if (fragment == null) {
+                fragment = AuctionFragment.newInstance();
+                replcaeFragment(fragment);
+
+
+            } else {
+                showFragment(fragment);
+            }
         } else if (id == R.id.nav_my_items) {
-            replaceFragment(itemFragment);
+            fragment = getSupportFragmentManager().findFragmentByTag(ItemFragment.class.getSimpleName());
+            if (fragment == null) {
+                fragment = ItemFragment.newInstance();
+                replcaeFragment(fragment);
+            } else {
+                showFragment(fragment);
+            }
         } else if (id == R.id.nav_my_bids) {
-            replaceFragment(bidFragment);
+            fragment = getSupportFragmentManager().findFragmentByTag(BidFragment.class.getSimpleName());
+            if (fragment == null) {
+                fragment = BidFragment.newInstance();
+                replcaeFragment(fragment);
+            } else {
+                showFragment(fragment);
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -102,10 +128,63 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
-    public void replaceFragment(Fragment fragment) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.content_home, fragment);
-        transaction.commit();
+    public void replcaeFragment(Fragment fragment) {
+
+        Log.e("replcaeFragment", "==>Activity");
+        try {
+            if (fragment != null) {
+
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.add(R.id.content_home, fragment, fragment.getClass().getSimpleName());
+
+                if (fragmentManager.getFragments() != null)
+                    for (Fragment frag : fragmentManager.getFragments()) {
+                        if (frag != null && frag.isVisible()) {
+                            frag.onPause();
+                            fragmentTransaction.hide(frag);
+                        }
+                    }
+
+                fragmentTransaction.commit();
+
+            }
+
+        } catch (Exception e) {
+
+        }
+
+    }
+
+    public void showFragment(Fragment fragment) {
+
+        Log.e("showFragment", "==>Activity");
+
+        try {
+            if (fragment != null) {
+                fragment.onPause();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+                if (fragmentManager.getFragments() != null)
+                    for (Fragment frag : fragmentManager.getFragments()) {
+                        if (frag != null && !fragment.getClass().getSimpleName().equals(frag.getClass().getSimpleName())) {
+
+                            if (frag.isVisible()) {
+                                fragmentTransaction.hide(frag);
+                            }
+                        }
+                    }
+
+                fragment.onResume();
+                fragmentTransaction.show(fragment);
+                fragmentTransaction.commit();
+            }
+        } catch (Exception e) {
+
+        }
+
+
     }
 
     @Override

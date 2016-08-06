@@ -18,25 +18,23 @@ import rbk.auction.ui.adapter.AuctionRvAdapter;
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * to handle interaction events.
- * Use the {@link AuctionLiveFragmant#newInstance} factory method to
+ * Use the {@link AuctionLiveFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AuctionLiveFragmant extends Fragment {
+public class AuctionLiveFragment extends Fragment {
 
 
     Activity activity;
     private RecyclerView rv;
     private View contentView;
 
-    public AuctionLiveFragmant() {
+    public AuctionLiveFragment() {
         // Required empty public constructor
     }
 
     // TODO: Rename and change types and number of parameters
-    public static AuctionLiveFragmant newInstance() {
-        AuctionLiveFragmant fragment = new AuctionLiveFragmant();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
+    public static AuctionLiveFragment newInstance() {
+        AuctionLiveFragment fragment = new AuctionLiveFragment();
         return fragment;
     }
 

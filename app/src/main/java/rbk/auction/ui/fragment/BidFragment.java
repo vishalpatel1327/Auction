@@ -67,7 +67,7 @@ public class BidFragment extends Fragment {
 
     private void setupViewPager(ViewPager viewPager) {
 
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager());
 
         adapter.addFragment(new BidLiveFragment(), "Live Bid");
         adapter.addFragment(new BidLiveFragment(), "Finished Bid");

@@ -13,22 +13,19 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.gson.Gson;
 
 import rbk.auction.R;
 import rbk.auction.database.DBHelper;
-import rbk.auction.database.UserModel;
 import rbk.auction.support.Common;
-import rbk.auction.ui.activity.ProfilingActivity;
 
 public class AddItemDialog extends Dialog implements View.OnClickListener {
     ImageView itemImage;
     EditText etName, etDescription, etInitialPrice;
     AppCompatButton btAdd;
     private String itemImageString = "";
+    Context context;
 
 
     public AddItemDialog(Context context) {
@@ -37,6 +34,7 @@ public class AddItemDialog extends Dialog implements View.OnClickListener {
         setContentView(R.layout.dialog_add_item);
         getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
 
+        this.context = context;
         findView();
     }
 
@@ -87,8 +85,8 @@ public class AddItemDialog extends Dialog implements View.OnClickListener {
             focusView.requestFocus();
         } else {
             SQLiteDatabase database;
-
-            database = DBHelper.getInstance(getContext()).getWritableDatabase();
+            DBHelper helper = new DBHelper(context);
+            database = helper.getWritableDatabase();
 
 
             ContentValues values = new ContentValues();
@@ -96,9 +94,21 @@ public class AddItemDialog extends Dialog implements View.OnClickListener {
             values.put(DBHelper.I_DESCRIPTION, description);
             values.put(DBHelper.I_INIT_PRICE, price);
             values.put(DBHelper.I_IMAGE, itemImageString);
-            database.insert(DBHelper.TITEM, null, values);
+            long yahoo = database.insert(DBHelper.TITEM, null, values);
             database.close();
-            dismiss();
+
+
+//            String selectQuery = "SELECT * FROM items";
+//            Cursor cursor = database.rawQuery(selectQuery, null);
+//            if (cursor.moveToFirst()) {
+//                do {
+//                    //wordList.add(map); } while (cursor.moveToNext());
+//
+//
+//                    Log.e("erororor??", "" + cursor.getString(1));
+//                    dismiss();
+//                } while (cursor.moveToNext());
+//            }
         }
     }
 

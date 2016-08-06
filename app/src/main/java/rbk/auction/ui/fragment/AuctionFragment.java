@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import rbk.auction.R;
+import rbk.auction.database.DBHelper;
 import rbk.auction.ui.adapter.ViewPagerAdapter;
 
 /**
@@ -22,11 +23,12 @@ import rbk.auction.ui.adapter.ViewPagerAdapter;
 public class AuctionFragment extends Fragment {
 
 
-    AuctionLiveFragment liveFragment = new AuctionLiveFragment();
-    AuctionLiveFragment finishedFragment = new AuctionLiveFragment();
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private View contentView;
+    //    private String queryLive = "select I.* from " + DBHelper.TITEM + " I inner join " + DBHelper.TAUCTION + " A on (I." + DBHelper.I_ID + "= A." + DBHelper.A_ITEM_ID + " and A." + DBHelper.A_STATUS + " = 0)";
+    private String queryLive = "SELECT i.* FROM " + DBHelper.TITEM + " i LEFT JOIN " + DBHelper.TAUCTION + " a ON (i." + DBHelper.I_ID + " = A." + DBHelper.A_ITEM_ID + ") WHERE A." + DBHelper.A_ITEM_ID + " IS NULL";
+//    private String queryLive = "select * from users";
 
     public AuctionFragment() {
         // Required empty public constructor
@@ -48,9 +50,6 @@ public class AuctionFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        liveFragment.setRetainInstance(true);
-        finishedFragment.setRetainInstance(true);
-
         contentView = inflater.inflate(R.layout.fragment_auction, container, false);
 
         viewPager = (ViewPager) contentView.findViewById(R.id.viewpager_fragment_auction);
@@ -65,8 +64,8 @@ public class AuctionFragment extends Fragment {
         Log.e(getClass().getSimpleName(), "setupAdapter");
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager());
-        adapter.addFragment(liveFragment, "Live Auction");
-        adapter.addFragment(finishedFragment, "Finished Auction");
+        adapter.addFragment(AuctionLiveFragment.newInstance(queryLive), "Live Auction");
+        adapter.addFragment(AuctionLiveFragment.newInstance(queryLive), "Finished Auction");
         viewPager.setAdapter(adapter);
 
         tabLayout = (TabLayout) contentView.findViewById(R.id.tabs_fragment_auction);

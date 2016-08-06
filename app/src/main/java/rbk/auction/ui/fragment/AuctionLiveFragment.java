@@ -1,17 +1,20 @@
 package rbk.auction.ui.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-
 import rbk.auction.R;
+import rbk.auction.database.DBHelper;
 import rbk.auction.ui.adapter.AuctionRvAdapter;
 
 /**
@@ -23,18 +26,28 @@ import rbk.auction.ui.adapter.AuctionRvAdapter;
  */
 public class AuctionLiveFragment extends Fragment {
 
+    private static final String ARG_PARAM1 = "param1";
+    private String queryString;
+
 
     Activity activity;
     private RecyclerView rv;
     private View contentView;
+    private SQLiteDatabase database;
 
     public AuctionLiveFragment() {
         // Required empty public constructor
     }
 
+    @SuppressLint("ValidFragment")
+    public AuctionLiveFragment(String queryLive) {
+        queryString = queryLive;
+    }
+
+
     // TODO: Rename and change types and number of parameters
-    public static AuctionLiveFragment newInstance() {
-        AuctionLiveFragment fragment = new AuctionLiveFragment();
+    public static AuctionLiveFragment newInstance(String queryLive) {
+        AuctionLiveFragment fragment = new AuctionLiveFragment(queryLive);
         return fragment;
     }
 
@@ -51,11 +64,19 @@ public class AuctionLiveFragment extends Fragment {
         this.activity = getActivity();
         contentView = inflater.inflate(R.layout.fragment_live_auction_fragmant, container, false);
 
+        DBHelper helper = new DBHelper(activity);
+        database = helper.getWritableDatabase();
 
         rv = (RecyclerView) contentView.findViewById(R.id.rv_auction);
         rv.setLayoutManager(new LinearLayoutManager(activity));
 
-        rv.setAdapter(new AuctionRvAdapter(activity, new ArrayList<String>()));
+        Cursor cursor = database.rawQuery(queryString, null);
+
+        Log.e("size of cursor", cursor.getCount() + "");
+
+
+        rv.setAdapter(new AuctionRvAdapter(activity, cursor));
+
 
         return contentView;
     }

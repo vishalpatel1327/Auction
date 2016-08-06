@@ -62,7 +62,6 @@ public class ItemFragment extends Fragment {
         return contentView;
     }
 
-
     private void setupViewPager(ViewPager viewPager) {
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager());
@@ -73,6 +72,4 @@ public class ItemFragment extends Fragment {
 
         viewPager.setAdapter(adapter);
     }
-
-
 }
